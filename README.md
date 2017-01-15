@@ -12,3 +12,4 @@ MacBook-Pro:wxpython_venv_example User$ source venv/bin/activate
 (venv) MacBook-Pro:wxpython_venv_example User$ cat requirements.txt | xargs -n 1 pip install
 (venv) MacBook-Pro:wxpython_venv_example User$ ./python test.py
 ```
+* **Be aware of "./" of "./python" in the last line**
