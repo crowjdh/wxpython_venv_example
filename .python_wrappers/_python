@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+MODE=$1
+PYTHON_VERSION=$2
+
+if [ -z "$VIRTUAL_ENV" ] ; then
+    echo "You must activate your virtualenv: set '$VIRTUAL_ENV'"
+    exit 1
+fi
+
+SYSTEM_FRAMEWORK_PYTHON_ROOT="/Library/Frameworks/Python.framework/Versions/$PYTHON_VERSION"
+# If OS X 10.10, then
+SYSTEM_FRAMEWORK_PYTHON_ROOT="/System$SYSTEM_FRAMEWORK_PYTHON_ROOT"
+
+PYTHON_BINARY="bin/python$PYTHON_VERSION"
+
+if [ "$MODE" == "b" ] ; then
+# If using brew python, then
+    PYSUBVER="$(python --version 2>&1 | cut -d ' ' -f2)"  # e.g., 2.7.10
+    BREW_PYTHON_ROOT="$(brew --prefix)/Cellar/python/$PYSUBVER/Frameworks/Python.framework/Versions/$PYTHON_VERSION"
+    FRAMEWORK_PYTHON="$BREW_PYTHON_ROOT/$PYTHON_BINARY"
+elif [ "$MODE" == "f" ] ; then
+    #else if using framework python, then
+    FRAMEWORK_PYTHON="$SYSTEM_FRAMEWORK_PYTHON_ROOT/$PYTHON_BINARY"
+fi
+
+VENV_SITE_PACKAGES="$VIRTUAL_ENV/lib/python$PYTHON_VERSION/site-packages"
+
+# Ensure wx.pth is set up in the virtualenv
+cp "/Library/Python/$PYTHON_VERSION/site-packages/wxredirect.pth" "$VENV_SITE_PACKAGES/wx.pth"
+
+# Use the Framework Python to run the app
+export PYTHONHOME=$VIRTUAL_ENV
+exec "$FRAMEWORK_PYTHON" ${@:3}

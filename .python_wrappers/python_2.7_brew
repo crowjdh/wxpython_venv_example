@@ -1,0 +1,2 @@
+#!/bin/bash -e
+sh .python_wrappers/_python "b" "2.7" $@
